@@ -1,0 +1,21 @@
+{
+  "name": "zeit-ip-manager",
+  "version": "1.0.0",
+  "main": "src/main.ts",
+  "scripts": {
+    "dev": "ts-node src/main.ts",
+    "start": "nodemon"
+  },
+  "repository": "https://github.com/MattieTK/zeit-ip-manager.git",
+  "author": "Matt TK Taylor <matt@tk.gg>",
+  "license": "MIT",
+  "dependencies": {
+    "@types/node": "^13.13.5",
+    "dotenv": "^8.2.0",
+    "node-fetch": "^2.6.0",
+    "nodemon": "^2.0.3",
+    "public-ip": "^4.0.1",
+    "ts-node": "^8.10.1",
+    "typescript": "^3.8.3"
+  }
+}
