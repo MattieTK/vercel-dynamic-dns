@@ -18,7 +18,7 @@ const getDomain = async function (vercelKey: string, domain: string): Promise<Ve
 
 const getRecordID = async function (name: string, recordList: VercelRecordList): Promise<VercelRecord> {
     if (name !== undefined) {
-        console.log("Checking sudbomain :: ", name)
+        console.log("Checking subdomain :: ", name)
         return recordList.records.filter(record => record.name == name)[0]
     }
     else {
