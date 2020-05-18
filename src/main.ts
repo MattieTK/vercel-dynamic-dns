@@ -33,11 +33,11 @@ const checkIPonRecord = async function (record: VercelRecord): Promise<boolean> 
     }
     const IP = await publicIP.v4();
     if (IP && IP == record.value) {
-        console.log("IP matches ", IP)
+        console.log("IP matches :: ", IP)
         return true
     }
     else {
-        console.log("IP match failed against ", IP)
+        console.log("IP match failed against :: ", IP)
         return false
     }
 
@@ -92,7 +92,7 @@ const loop = async function () {
 }
 
 const timeout = function (time: number): Promise<any> {
-    console.log(`Sleeping for ${time} seconds`)
+    console.log(`Sleeping :: ${time} seconds`)
     return new Promise((resolve, reject) => {
         setTimeout(() => { resolve(); }, time * 1000)
     })
