@@ -54,7 +54,7 @@ const updateRecord = async function (vercelKey: string, domain: string, recordTo
             }
         }
         let deleteResponse = await fetch(`https://api.vercel.com/v2/domains/${domain}/records/${recordToDelete.id}`, deleteOptions)
-        let deleteResult = deleteResponse.json()
+        let deleteResult = await deleteResponse.json()
         console.log("Record deleted :: ", deleteResult)
     }
     console.log(options)
@@ -71,7 +71,7 @@ const updateRecord = async function (vercelKey: string, domain: string, recordTo
         })
     }
     let createResponse = await fetch(`https://api.vercel.com/v2/domains/${domain}/records/`, createOptions)
-    let createResult = createResponse.json()
+    let createResult = await createResponse.json()
     console.log("Record created :: ", createResult)
     return createResult
 
