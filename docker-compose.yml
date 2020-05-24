@@ -1,6 +1,6 @@
 version: "2"
 services:
-  zeit_ip_manager:
+  app:
     build:
       context: .
       dockerfile: ./Dockerfile
