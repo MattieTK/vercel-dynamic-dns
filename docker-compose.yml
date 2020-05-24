@@ -1,0 +1,6 @@
+version: "2"
+services:
+  zeit_ip_manager:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
