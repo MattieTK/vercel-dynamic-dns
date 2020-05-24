@@ -1,12 +1,12 @@
 {
-  "name": "zeit-ip-manager",
+  "name": "vercel-dynamic-dns",
   "version": "1.0.0",
   "main": "src/main.ts",
   "scripts": {
     "dev": "ts-node src/main.ts",
     "start": "nodemon"
   },
-  "repository": "https://github.com/MattieTK/zeit-ip-manager.git",
+  "repository": "https://github.com/MattieTK/vercel-dynamic-dns.git",
   "author": "Matt TK Taylor <matt@tk.gg>",
   "license": "MIT",
   "dependencies": {
