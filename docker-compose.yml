@@ -4,3 +4,7 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile
+    environment: 
+        - VERCEL_API_KEY=<API_KEY_HERE>
+        - DOMAIN=<DOMAIN_HERE>
+        - SUBDOMAIN=<SUBDOMAIN_HERE>
