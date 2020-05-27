@@ -11,9 +11,14 @@ const getDomain = async function (vercelKey: string, domain: string): Promise<Ve
             "Content-Type": "application/json"
         }
     }
-    let response = await fetch(`https://api.vercel.com/v4/domains/${domain}/records`, options)
-    let result: VercelRecordList = await response.json()
-    return result
+    try {
+        let response = await fetch(`https://api.vercel.com/v4/domains/${domain}/records`, options)
+        let result: VercelRecordList = await response.json()
+        return result
+    }
+    catch (err) {
+        console.log(err)
+    }
 }
 
 const getRecordID = async function (name: string, recordList: VercelRecordList): Promise<VercelRecord> {
@@ -44,64 +49,71 @@ const checkIPonRecord = async function (record: VercelRecord): Promise<boolean> 
 }
 
 const updateRecord = async function (vercelKey: string, domain: string, recordToDelete?: VercelRecord, options?: { name: string, type: string }): Promise<{ "uid": string }> {
-    const IP = await publicIP.v4();
-    if (recordToDelete) {
-        let deleteOptions = {
-            method: "DELETE",
+    try {
+        const IP = await publicIP.v4();
+        if (recordToDelete) {
+            let deleteOptions = {
+                method: "DELETE",
+                headers: {
+                    "Authorization": `Bearer ${vercelKey}`,
+                    "Content-Type": "application/json"
+                }
+            }
+            let deleteResponse = await fetch(`https://api.vercel.com/v2/domains/${domain}/records/${recordToDelete.id}`, deleteOptions)
+            let deleteResult = await deleteResponse.json()
+            console.log("Record deleted :: ", deleteResult)
+        }
+        console.log(options)
+        let createOptions = {
+            method: "POST",
             headers: {
                 "Authorization": `Bearer ${vercelKey}`,
                 "Content-Type": "application/json"
-            }
+            },
+            body: JSON.stringify({
+                "name": recordToDelete ? recordToDelete.name : options.name,
+                "type": recordToDelete ? recordToDelete.type : options.type,
+                "value": IP
+            })
         }
-        let deleteResponse = await fetch(`https://api.vercel.com/v2/domains/${domain}/records/${recordToDelete.id}`, deleteOptions)
-        let deleteResult = await deleteResponse.json()
-        console.log("Record deleted :: ", deleteResult)
+        let createResponse = await fetch(`https://api.vercel.com/v2/domains/${domain}/records/`, createOptions)
+        let createResult = await createResponse.json()
+        console.log("Record created :: ", createResult)
+        return createResult
     }
-    console.log(options)
-    let createOptions = {
-        method: "POST",
-        headers: {
-            "Authorization": `Bearer ${vercelKey}`,
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            "name": recordToDelete ? recordToDelete.name : options.name,
-            "type": recordToDelete ? recordToDelete.type : options.type,
-            "value": IP
-        })
+    catch (err) {
+        console.log(err)
     }
-    let createResponse = await fetch(`https://api.vercel.com/v2/domains/${domain}/records/`, createOptions)
-    let createResult = await createResponse.json()
-    console.log("Record created :: ", createResult)
-    return createResult
-
 }
 
 const loop = async function () {
     let recordList = await getDomain(process.env.VERCEL_API_KEY, "tk.gg");
-    let record = await getRecordID(process.env.SUBDOMAIN, recordList)
-    if (record) {
-        let recordCheck = await checkIPonRecord(record)
-        if (!recordCheck) {
-            updateRecord(process.env.VERCEL_API_KEY, "tk.gg", record)
+    if (recordList) {
+        let record = await getRecordID(process.env.SUBDOMAIN, recordList)
+        if (record) {
+            let recordCheck = await checkIPonRecord(record)
+            if (!recordCheck) {
+                updateRecord(process.env.VERCEL_API_KEY, "tk.gg", record)
+            }
         }
-    }
-    else {
-        updateRecord(process.env.VERCEL_API_KEY, "tk.gg", null, { name: "home", type: "A" })
+        else {
+            updateRecord(process.env.VERCEL_API_KEY, "tk.gg", null, { name: "home", type: "A" })
+        }
     }
 }
 
 const timeout = function (time: number): Promise<any> {
     console.log(`Sleeping :: ${time} seconds`)
+    let const : number = (process.env.TIMEOUT).toNumber() || 300
     return new Promise((resolve, reject) => {
-        setTimeout(() => { resolve(); }, time * 1000)
+        setTimeout(() => { resolve(); }, time * timeout)
     })
 }
 
 const main = async function () {
     while (true) {
         await loop()
-        await timeout(300)
+        await timeout(30)
     }
 }
 
