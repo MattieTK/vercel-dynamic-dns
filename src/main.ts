@@ -104,7 +104,7 @@ const loop = async function () {
 
 const timeout = function (time: number): Promise<any> {
     console.log(`Sleeping :: ${time} seconds`)
-    let const : number = (process.env.TIMEOUT).toNumber() || 300
+    const timeout = process.env.TIMEOUT ? +process.env.TIMEOUT : 300;
     return new Promise((resolve, reject) => {
         setTimeout(() => { resolve(); }, time * timeout)
     })
