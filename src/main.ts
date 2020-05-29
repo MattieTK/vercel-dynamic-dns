@@ -102,18 +102,18 @@ const loop = async function () {
     }
 }
 
-const timeout = function (time: number): Promise<any> {
-    console.log(`Sleeping :: ${time} seconds`)
-    const timeout = process.env.TIMEOUT ? +process.env.TIMEOUT : 300;
+const timeout = function (): Promise<any> {
+    const timeout = parseInt(process.env.TIMEOUT) || 300;
+    console.log(`Sleeping :: ${timeout} seconds`)
     return new Promise((resolve, reject) => {
-        setTimeout(() => { resolve(); }, time * timeout)
+        setTimeout(() => { resolve(); }, 1000 * timeout)
     })
 }
 
 const main = async function () {
     while (true) {
         await loop()
-        await timeout(30)
+        await timeout()
     }
 }
 
