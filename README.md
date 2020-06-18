@@ -2,7 +2,7 @@
 
 Vercel (formerly Zeit) offer a domains service backed by their own nameservers and API. Similarly to a domain managed via Cloudflare, it is relatively simple to set up a domain you own that can act as a dynamic DNS.
 
-The program here is a small daemon you can run standalone or as a docker container in order to manage a sudbomain for a domain you own (technically I guess everything is a subdomain anyway).
+The program here is a small daemon you can run standalone or as a docker container in order to manage a subdomain for a domain you own.
 
 It is run via environment variables of which there are three
 
