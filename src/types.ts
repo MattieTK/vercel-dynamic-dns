@@ -20,6 +20,7 @@ export interface VercelPagination {
 }
 
 export interface VercelRecordList {
+    error?: object,
     records: [VercelRecord],
     pagination: VercelPagination
 }

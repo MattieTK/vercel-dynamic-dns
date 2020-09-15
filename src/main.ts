@@ -22,12 +22,16 @@ const getDomain = async function (vercelKey: string, domain: string): Promise<Ve
 }
 
 const getRecordID = async function (name: string, recordList: VercelRecordList): Promise<VercelRecord> {
-    if (name !== undefined) {
-        console.log("Checking subdomain :: ", name)
-        return recordList.records.filter(record => record.name == name)[0]
-    }
-    else {
+    if (name === undefined) {
         console.error("Name undefined")
+        if (recordList.error) {
+            console.error("Vercel Error :: ", JSON.stringify(recordList))
+        }
+        else {
+            console.log("Checking subdomain :: ", name)
+
+            return recordList.records.filter(record => record.name == name)[0]
+        }
     }
 }
 
@@ -78,6 +82,10 @@ const updateRecord = async function (vercelKey: string, domain: string, recordTo
         }
         let createResponse = await fetch(`https://api.vercel.com/v2/domains/${domain}/records/`, createOptions)
         let createResult = await createResponse.json()
+        if (createResult.error) {
+            console.error("Error creating record :: ", createResult.error)
+            return
+        }
         console.log("Record created :: ", createResult)
         return createResult
     }
