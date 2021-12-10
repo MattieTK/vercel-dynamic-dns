@@ -95,17 +95,17 @@ const updateRecord = async function (vercelKey: string, domain: string, recordTo
 }
 
 const loop = async function () {
-    let recordList = await getDomain(process.env.VERCEL_API_KEY, "tk.gg");
+    let recordList = await getDomain(process.env.VERCEL_API_KEY, process.env.DOMAIN);
     if (recordList) {
         let record = await getRecordID(process.env.SUBDOMAIN, recordList)
         if (record) {
             let recordCheck = await checkIPonRecord(record)
             if (!recordCheck) {
-                updateRecord(process.env.VERCEL_API_KEY, "tk.gg", record)
+                updateRecord(process.env.VERCEL_API_KEY, process.env.DOMAIN, record)
             }
         }
         else {
-            updateRecord(process.env.VERCEL_API_KEY, "tk.gg", null, { name: "home", type: "A" })
+            updateRecord(process.env.VERCEL_API_KEY, process.env.DOMAIN, null, { name: process.env.SUBDOMAIN, type: "A" })
         }
     }
 }
