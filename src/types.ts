@@ -1,4 +1,4 @@
-export interface VercelRecord {
+export type VercelRecord = {
     id: string,
     slug: string,
     name: string,
@@ -12,14 +12,19 @@ export interface VercelRecord {
     updatedAt: number
 }
 
-export interface VercelPagination {
+export type VercelPagination = {
     count: number,
     next?: number,
     prev?: number
 
 }
 
-export interface VercelRecordList {
+export type VercelRecordCreation = {
+    uid: string,
+    updated?: number,
+}
+
+export type VercelRecordList = {
     error?: object,
     records: [VercelRecord],
     pagination: VercelPagination
