@@ -2,23 +2,25 @@
   "name": "vercel-dynamic-dns",
   "version": "1.0.0",
   "main": "src/main.ts",
+  "type": "module",
   "scripts": {
-    "dev": "ts-node src/main.ts",
-    "start": "pm2-runtime start ecosystem.config.js",
-    "daemon": "pm2 start ecosystem.config.js"
+    "dev": "node --experimental-specifier-resolution=node --loader ts-node/esm src/main.ts",
+    "start": "npm install -g typescript && tsc --project tsconfig.json && pm2-runtime start dist/main.js",
+    "daemon": "npm install -g typescript && tsc --project tsconfig.json && pm2 start dist/main.js"
   },
   "repository": "https://github.com/MattieTK/vercel-dynamic-dns.git",
   "author": "Matt TK Taylor <matt@tk.gg>",
   "license": "MIT",
   "dependencies": {
-    "@types/node": "^13.13.5",
+    "@types/node": "^17.0.23",
     "add": "^2.0.6",
-    "dotenv": "^8.2.0",
-    "node-fetch": "^2.6.1",
-    "pm2": "^4.4.0",
-    "public-ip": "^4.0.1",
-    "ts-node": "^8.10.1",
-    "typescript": "^3.8.3",
-    "yarn": "^1.22.4"
+    "dotenv": "^16.0.0",
+    "isomorphic-fetch": "^3.0.0",
+    "node-fetch": "^3.2.3",
+    "pm2": "^5.2.0",
+    "public-ip": "^5.0.0",
+    "ts-node": "^10.7.0",
+    "typescript": "^4.6.3",
+    "yarn": "^1.22.18"
   }
 }

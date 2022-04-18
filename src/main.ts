@@ -1,10 +1,11 @@
 import fetch from 'node-fetch';
-const dotenv = require('dotenv').config()
-const publicIP = require('public-ip');
-import { VercelRecord, VercelPagination, VercelRecordList } from './types'
+import * as dotenv from 'dotenv'
+import publicIP from 'public-ip'
+import { VercelRecord, VercelRecordList, VercelRecordCreation } from './types'
 
+dotenv.config()
 
-const getDomain = async function (vercelKey: string, domain: string): Promise<VercelRecordList> {
+const getDomain = async function (vercelKey: string, domain: string) : Promise<VercelRecordList | undefined>  {
     const options = {
         headers: {
             "Authorization": `Bearer ${vercelKey}`,
@@ -13,27 +14,26 @@ const getDomain = async function (vercelKey: string, domain: string): Promise<Ve
     }
     try {
         let response = await fetch(`https://api.vercel.com/v4/domains/${domain}/records`, options)
-        let result: VercelRecordList = await response.json()
-        return result
+         let result = await response.json() as VercelRecordList
+         return result
     }
     catch (err) {
-        console.log(err)
+        console.log(err as Error) 
     }
 }
 
-const getRecordID = async function (name: string, recordList: VercelRecordList): Promise<VercelRecord> {
+const getRecordID = async function (name: string, recordList: VercelRecordList): Promise<VercelRecord | undefined> {
     if (name === undefined) {
         console.error("Name undefined")
-        if (recordList.error) {
-            console.error("Vercel Error :: ", JSON.stringify(recordList))
+    }
+    else if (recordList.error) {
+            console.log("Vercel Error :: ", JSON.stringify(recordList))
         }
         else {
             console.log("Checking subdomain :: ", name)
-
             return recordList.records.filter(record => record.name == name)[0]
         }
     }
-}
 
 const checkIPonRecord = async function (record: VercelRecord): Promise<boolean> {
     if (record === undefined) {
@@ -52,7 +52,7 @@ const checkIPonRecord = async function (record: VercelRecord): Promise<boolean> 
 
 }
 
-const updateRecord = async function (vercelKey: string, domain: string, recordToDelete?: VercelRecord, options?: { name: string, type: string }): Promise<{ "uid": string }> {
+const updateRecord = async function (vercelKey: string, domain: string, recordToDelete: VercelRecord | null, options?: { name: string, type: string }): Promise<{ "uid": string } | undefined> {
     try {
         const IP = await publicIP.v4();
         if (recordToDelete) {
@@ -64,10 +64,12 @@ const updateRecord = async function (vercelKey: string, domain: string, recordTo
                 }
             }
             let deleteResponse = await fetch(`https://api.vercel.com/v2/domains/${domain}/records/${recordToDelete.id}`, deleteOptions)
+            if (deleteResponse.status !== 200) {
+                console.error("Delete failed :: ", deleteResponse.status)
+            }
             let deleteResult = await deleteResponse.json()
             console.log("Record deleted :: ", deleteResult)
         }
-        console.log(options)
         let createOptions = {
             method: "POST",
             headers: {
@@ -75,43 +77,48 @@ const updateRecord = async function (vercelKey: string, domain: string, recordTo
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                "name": recordToDelete ? recordToDelete.name : options.name,
-                "type": recordToDelete ? recordToDelete.type : options.type,
+                "name": recordToDelete ? recordToDelete.name : options?.name || null,
+                "type": recordToDelete ? recordToDelete.type : options?.type || null,
                 "value": IP
             })
         }
         let createResponse = await fetch(`https://api.vercel.com/v2/domains/${domain}/records/`, createOptions)
-        let createResult = await createResponse.json()
-        if (createResult.error) {
-            console.error("Error creating record :: ", createResult.error)
+        if (createResponse.status !== 200) {
+            let response = await createResponse.json()
+            console.error("Error creating record :: ", response)
             return
         }
+        let createResult = await createResponse.json() as VercelRecordCreation
         console.log("Record created :: ", createResult)
         return createResult
     }
     catch (err) {
-        console.log(err)
+        console.error(err as Error)
+    
     }
 }
 
 const loop = async function () {
-    let recordList = await getDomain(process.env.VERCEL_API_KEY, process.env.DOMAIN);
+    if (process.env.VERCEL_API_KEY == undefined || process.env.DOMAIN == undefined || process.env.SUBDOMAIN == undefined) {
+        throw Error("Missing API Key or Domain or Subdomain. Check .env file.")
+    }
+    let recordList = await getDomain(process.env.VERCEL_API_KEY!, process.env.DOMAIN!);
     if (recordList) {
-        let record = await getRecordID(process.env.SUBDOMAIN, recordList)
+        let record = await getRecordID(process.env.SUBDOMAIN!, recordList)
         if (record) {
             let recordCheck = await checkIPonRecord(record)
             if (!recordCheck) {
-                updateRecord(process.env.VERCEL_API_KEY, process.env.DOMAIN, record)
+                await updateRecord(process.env.VERCEL_API_KEY!, process.env.DOMAIN!, record)
             }
         }
         else {
-            updateRecord(process.env.VERCEL_API_KEY, process.env.DOMAIN, null, { name: process.env.SUBDOMAIN, type: "A" })
+            await updateRecord(process.env.VERCEL_API_KEY!, process.env.DOMAIN!, null, { name: process.env.SUBDOMAIN!, type: "A" })
         }
     }
 }
 
-const timeout = function (): Promise<any> {
-    const timeout = parseInt(process.env.TIMEOUT) || 300;
+const timeout = function (): Promise<void> {
+    const timeout = process.env.TIMEOUT && typeof(process.env.TIMEOUT) === "number" ? parseInt(process.env.TIMEOUT) : 300;
     console.log(`Sleeping :: ${timeout} seconds`)
     return new Promise((resolve, reject) => {
         setTimeout(() => { resolve(); }, 1000 * timeout)
@@ -130,5 +137,5 @@ try {
     main()
 }
 catch (err) {
-    console.error(err)
+    console.error(err as Error)
 }
