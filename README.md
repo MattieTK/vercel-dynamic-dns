@@ -18,6 +18,8 @@ It is run via environment variables of which there are three
 
 1. Clone the repo.
 2. Run `yarn` to install dependencies
+3. Fill in environment variables in `.env` file
+4. Run `yarn start`
 
 
 ### With Docker
@@ -26,5 +28,5 @@ It is run via environment variables of which there are three
 
 ### With Docker Compose
 1. Clone the repo
-2. Fill in your environment varialbes in the `docker-compose.yml` file
+2. Fill in your environment variables in the `docker-compose.yml` file
 3. Run `docker-compose up`
