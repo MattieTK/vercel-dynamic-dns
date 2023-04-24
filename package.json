@@ -16,7 +16,7 @@
     "add": "^2.0.6",
     "dotenv": "^16.0.0",
     "isomorphic-fetch": "^3.0.0",
-    "node-fetch": "^3.2.3",
+    "node-fetch": "^3.2.10",
     "pm2": "^5.2.0",
     "public-ip": "^5.0.0",
     "ts-node": "^10.7.0",
